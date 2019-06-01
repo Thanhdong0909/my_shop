@@ -1,0 +1,25 @@
+<% @products.each do |product| %>
+  <div class="col s12 m6 l4 col-lager-customize">
+    <%= link_to product do %>
+      <div class="card z-depth-2">
+        <div class="card-image">
+          <%= image_tag "car.jpg" %>
+        </div>
+      <span class="card-title"><%= product.name %></span>
+    <% end %>
+      <div class="card-content">
+        <%= product.content.html_safe %>
+      </div>
+      <div class="card-action">
+        <div class="row">
+          <div class="col s6 l4">
+            <%= product.price %>
+          </div>
+          <div class="col s6 l8">
+            <a href="#" class="waves-effect waves-light btn right"> Add to cart</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
