@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
-  devise_for :users, :path => '', :path_names => {:sign_in => 'login', :sign_out => 'logout', :edit => 'profile', :confirmation => 'confirmations'}
+  devise_for :users, :path => '', :path_names => {:sign_in => 'login', :sign_out => 'logout', :edit => 'profile', :confirmation => 'confirmations'},
+                                                  :controllers => {:omniauth_callbacks => 'omniauth_callbacks',  registrations: 'registrations'}
   resources :users
   resources :products
   resources :categories do
