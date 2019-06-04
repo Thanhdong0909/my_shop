@@ -5,6 +5,12 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :omniauthable,
          :recoverable, :rememberable, :validatable, :confirmable, :timeoutable, :lockable
 
+  after_create :send_email_welcome
+
+  def send_email_welcome
+    ShopMailer.new_user(self).deliver
+  end
+
   def self.find_for_google_oauth2(provider, uid, name, email, signed_in_resource = nil)
     user = User.where(:provider => provider, :uid => uid).first
 

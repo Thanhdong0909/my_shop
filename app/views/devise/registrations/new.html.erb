@@ -1,31 +1,222 @@
 <div class="container">
-  <h2>Sign up</h2>
+  <div class="row"></div>
+  <div class="row"></div>
+  <div class="row">
+    <div class="col s12 m12 l4 center">
+      <div class="card-panel">
+        <div class="row s12" id="button-sign-up-google">
+          <%= link_to '<i class="fa fa-google-plus"></i>&nbsp; &nbsp; Sign up with Google'.html_safe, user_google_oauth2_omniauth_authorize_path, class: 'btn red darken-1' %>
+        </div>
+        <div class="row s12">
+          <%= link_to '<i class="fa fa-facebook"></i>&nbsp; &nbsp; Sign up with Facebook'.html_safe, user_facebook_omniauth_authorize_path, class: 'btn blue darken-4' %>
+        </div>
+      </div>
+    </div>
+    <div class="col s12 m12 l8 ">
+      <div class="card">
+        <div class="title-sign-up-page center blue-grey darken-3">
+          Sign Up
+        </div>
+        <div class="card-content">
+          <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+            <%= render "shared/devise_message", resource: resource %>
 
-  <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+            <div class="row">
+              <div class="input-field col s12 sign-up-fields">
+                <i class="material-icons md-36 prefix icon-account-material">account_circle</i>
+                    <%= f.text_field :name, autofocus: true, autocomplete: 'on', :class => 'validate', :placeholder => 'Name (min 3 characters)' %>
+                <i class="material-icons md-36" id="InforCheckNameMatch">done</i>
+                <i class="material-icons md-36" id="InforCheckNameError">error</i>
+              </div>
+            </div>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+            <div class="row">
+              <div class="input-field col s12 sign-up-fields">
+                    <i class="material-icons md-36 prefix icon-account-material">email</i>
+                    <%= f.email_field :email, autocomplete: 'on', :class => 'validate', :placeholder => 'Email' %>
+                    <span id="note-exist-email"><br/>This email is already registered</span>
+                    <i class="material-icons md-36" id="InforCheckEmailMatch">done</i>
+                    <i class="material-icons md-36" id="InforCheckEmailError">error</i>
+                  </div>
+            </div>
+
+            <div class="row">
+              <div class="input-field col s12 sign-up-fields">
+                    <i class="material-icons md-36 prefix icon-account-material">lock_outline</i>
+                    <%= f.password_field :password, :autocomplete => 'off', :class => 'validate', :placeholder => 'Password  (min 6 characters)' %>
+                    <i class="material-icons md-36" id="InforCheckPasswordLength">done</i>
+                    <i class="material-icons md-36" id="InforCheckPasswordLengthError">error</i>
+                    <span id="show-message-password"></span>
+                  </div>
+            </div>
+
+           <div class="row">
+              <div class="input-field col s12 sign-up-fields">
+                    <i class="material-icons md-36 prefix icon-account-material">lock_outline</i>
+                    <%= f.password_field :password_confirmation, :autocomplete => 'off', :class => 'validate', :placeholder => 'Repeat password' %>
+                    <i class="material-icons md-36" id="InforCheckPasswordMatch">done</i>
+                    <i class="material-icons md-36" id="InforCheckPasswordError">error</i>
+                  </div>
+           </div>
+            <div class="row center">
+              <div class="input-field col s12">
+                  <button class="btn waves-effect waves-light" type="submit" name="action">Sign up</button>
+              </div>
+
+            </div>
+
+        <% end %>
+          <div class="row center">
+             <p>Already have an account? <%= link_to 'Login', new_user_session_path %></p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <div class="field">
-    <%= f.label :password %>
-    <% if @minimum_password_length %>
-    <em>(<%= @minimum_password_length %> characters minimum)</em>
-    <% end %><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-  </div>
-
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Sign up" %>
-  </div>
-  <% end %>
-
-  <%= render "devise/shared/links" %>
 </div>
+<script>
+    // var submitInvisibleRecaptchaForm = function () {
+    //     document.getElementById("new_user").submit();
+    // };
+</script>
+<script>
+  function checkFormatEmail() {
+        var mail = $("#user_email").val();
+
+        var length_email = mail.length;
+
+        if (length_email === 0) {
+            $("#note-exist-email").hide();
+            $("#InforCheckEmailMatch").hide();
+            $("#InforCheckEmailError").hide();
+            return;
+        }
+
+        var user = {email: mail};
+
+        var response = -1;
+
+        $.ajax({
+            type: "GET",
+            url: "/check-user",
+            data: user,
+            async: false,
+            success: function (text) {
+                response = parseInt(text);
+            }
+        });
+
+        if ((response === 1) || (response === 2)) {
+            $("#note-exist-email").show();
+        }
+
+        if (isValidEmailAddress(mail) && response === 0) {
+            $("#note-exist-email").hide();
+            $("#InforCheckEmailMatch").show();
+            $("#InforCheckEmailError").hide();
+        }
+        else {
+            $("#InforCheckEmailMatch").hide();
+            $("#InforCheckEmailError").show();
+        }
+
+    }
+
+    function checkNameLength() {
+        var name = $("#user_name").val();
+        var size_of_name = name.length;
+
+        if (size_of_name === 0) {
+            $("#InforCheckNameMatch").hide();
+            $("#InforCheckNameError").hide();
+            return;
+        }
+
+        if ((size_of_name >= 3) && (size_of_name <= 25)) {
+            $("#InforCheckNameMatch").show();
+            $("#InforCheckNameError").hide();
+        }
+        else {
+            $("#InforCheckNameMatch").hide();
+            $("#InforCheckNameError").show();
+        }
+    }
+
+    function checkPasswordLength() {
+        var password = $("#user_password").val();
+        var size_of_password = password.length;
+
+        if (size_of_password === 0) {
+            $("#InforCheckPasswordLength").hide();
+            $("#InforCheckPasswordLengthError").hide();
+            $("#show-message-password").hide();
+            return;
+        }
+
+        if (size_of_password >= 6) {
+            $("#InforCheckPasswordLength").show();
+            $("#InforCheckPasswordLengthError").hide();
+        }
+        else {
+            $("#InforCheckPasswordLength").hide();
+            $("#InforCheckPasswordLengthError").show();
+        }
+
+    }
+
+    function checkLostFocusPasswordBox() {
+        var password = $("#user_password").val();
+        var size_of_password = password.length;
+
+        if (size_of_password >= 6) {
+            $("#show-message-password").html("<br><br>Your password : " + "<b>" + password + "</b>");
+            $("#show-message-password").css("color", "green");
+
+            $("#show-message-password").show();
+            $("#show-message-password").fadeOut(6000);
+        }
+        else {
+            $("#show-message-password").hide();
+        }
+    }
+
+    function checkPasswordMatch() {
+        var password = $("#user_password").val();
+        var confirmPassword = $("#user_password_confirmation").val();
+
+        if (confirmPassword.length === 0) {
+            $("#InforCheckPasswordMatch").hide();
+            $("#InforCheckPasswordError").hide();
+            return;
+        }
+
+        if ((password === confirmPassword) && (password.length > 0)) {
+            $("#InforCheckPasswordMatch").show();
+            $("#InforCheckPasswordError").hide();
+        }
+        else {
+            $("#InforCheckPasswordMatch").hide();
+            $("#InforCheckPasswordError").show();
+        }
+    }
+  $(document).ready(function(){
+    $("#InforCheckNameMatch").hide();
+    $("#InforCheckNameError").hide();
+    $("#InforCheckEmailMatch").hide();
+    $("#InforCheckEmailError").hide();
+    $("#InforCheckPasswordLength").hide();
+    $("#InforCheckPasswordLengthError").hide();
+    $("#InforCheckPasswordMatch").hide();
+    $("#InforCheckPasswordError").hide();
+    $("#InforCheckPasswordLengthError").hide();
+    $("#show-message-password").hide();
+    $("#note-exist-email").hide();
+    $("#user_email").focusout(checkFormatEmail);
+    $("#user_name").keyup(checkNameLength);
+    $("#user_name").mouseup(checkNameLength);
+    $("#user_name").focusout(checkNameLength);
+    $("#user_password").keyup(checkPasswordLength);
+    $("#user_password").focusout(checkLostFocusPasswordBox);
+    $("#user_password_confirmation").keyup(checkPasswordMatch);
+  })
+</script>

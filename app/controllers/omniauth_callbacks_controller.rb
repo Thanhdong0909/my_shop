@@ -1,5 +1,6 @@
 class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def google_oauth2
+    byebug
     @user = User.find_for_google_oauth2(request.env['omniauth.auth'].provider, request.env['omniauth.auth'].uid, request.env['omniauth.auth'].extra.raw_info.name, request.env['omniauth.auth'].info.email, current_user)
 
     if @user.persisted?
